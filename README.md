@@ -46,7 +46,7 @@ python3 sala_de_medios.py
 ![esquema](readme-esquema.png)
 12. Cargar ediciones en Wikimedia Commons. Extensiones Wikidata / Cargar ediciones en Wikidata
 ## To do
-- Esperar a que nos aprueben el dominio montevideo.gub.uy en [la lista de dominios permitidos](https://commons.wikimedia.org/wiki/MediaWiki_talk:Copyupload-allowed-domains)
+- vista en miniatura de las imágenes
 - probar casos posibles:
 -- quiero bajar todo y dividirme la tarea de subida entre 3 personas. importante que en este paso que OR reconozca en la reconciliación las fotos ya subidas.
 -- quiero scrapear fotos más recientes
