@@ -46,14 +46,15 @@ python3 sala_de_medios.py
 ![esquema](readme-esquema.png)
 12. Cargar ediciones en Wikimedia Commons. Extensiones Wikidata / Cargar ediciones en Wikidata
 ## To do
-- Esperar a que nos aprueben el dominio montevideo.gub.uy en [la lista de dominios permitidos](https://commons.wikimedia.org/wiki/MediaWiki_talk:Copyupload-allowed-domains)
+- vista en miniatura de las imágenes
 - probar casos posibles:
+-- quiero bajar todo y dividirme la tarea de subida entre 3 personas. importante que en este paso que OR reconozca en la reconciliación las fotos ya subidas.
 -- quiero scrapear fotos más recientes
 -- hace una semana scrapeé las últimas fotos. quiero escrapear las fotos más recientes
 -- quiero scrapear un rango viejo de fotos
 - agregar autor a los datos estructurados y/o wikitexto. Hay un bot que lo agrega a partir del EXIF? Es mejor usar el template Photograph o Information en el wikitext?
 - arreglar headers del wikitexto 
 - hay mejor información (título, palabras claves, descripción) que podamos extraer del EXIF? los extrae automáticamente un bot? Es mejor usar el template Photograph o Information en el wikitext?
-- cómo scrapear las fotos del pasado. navegar fechas en lugar de navegar páginas? el 16/07 chequeé que las páginas llegan hasta la página 2551, marzo de 2024. Donde están las fotos de fechas anteriores? Están desordenadas?
 - agregar categorías automáticamente a partir de ciertas palabras clave, o manualmente según rangos de fechas o páginas
 - agregar caption en inglés
+- NOTA / TAREA DESCARTADA: cómo scrapear las fotos del pasado. navegar fechas en lugar de navegar páginas? el 16/07 chequeé que las páginas llegan hasta la página 2551, marzo de 2024. Donde están las fotos de fechas anteriores? Están desordenadas? Esto se puede consultar con ellos.
