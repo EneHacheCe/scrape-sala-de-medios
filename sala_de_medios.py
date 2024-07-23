@@ -1,15 +1,14 @@
-#0. averiguar en glam chatgroup
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import os
 
 #Comenzar en la página
-START_AT_PAGE = 0
+START_AT_PAGE = 2133
 # Detenerse al llegar a este al archivo, por ejemplo: 20240716dicimouyplr61.jpg
-STOP_AT_FILE = "20240716dicimouyplr71.jpg"
+STOP_AT_FILE = "NO REAL FILE!"
 #Detenerse al llegar a las N páginas
-SCARPE_MAX_N_PAGES = 3
+SCARPE_MAX_N_PAGES = 427
 #Caption en español para las imágenes que no tienen título definido en la web de sala de medios
 DEFAULT_CAPTION = "Fotografía de la Sala de Medios de la Intendencia de Montevideo"
 
@@ -28,7 +27,7 @@ if os.path.exists(CSV_FILE):
     df_existing = pd.read_csv(CSV_FILE)
     existing_files = df_existing['nombre_archivo_original'].tolist()
 else:
-    df_existing = pd.DataFrame(columns=['previsualizacion_src','previsualizacion','enlace_web', 'nombre_de_archivo_para_commons', 'fecha', 'palabras_clave', 'caption_es', 'wikitext', 'nombre_archivo_original', 'enlace_descarga'])
+    df_existing = pd.DataFrame(columns=['previsualizacion_src','previsualizacion','enlace_web', 'nombre_de_archivo_para_commons', 'fecha', 'palabras_clave', 'caption_es', 'wikitext', 'scrapeada_de_la_pagina_numero','nombre_archivo_original', 'enlace_descarga'])
     existing_files = []
 
 # Obtener el HTML de una página
@@ -75,7 +74,7 @@ def scrape_page(page_number):
 
 [[Category:Files_provided_by_Sala_de_Medios_Intendencia_de_Montevideo]]
 """
-        nuevos_datos.append([previsualizacion_src,"",enlace_web, nombre_de_archivo_para_commons, fecha, palabras_clave, caption_es, wikitext, nombre_archivo_original, enlace_descarga])
+        nuevos_datos.append([previsualizacion_src,"",enlace_web, nombre_de_archivo_para_commons, fecha, palabras_clave, caption_es, wikitext, page_number, nombre_archivo_original, enlace_descarga])
         
     return nuevos_datos, False
 
@@ -93,7 +92,7 @@ while not encontrado_existente and page_number < stop_at_page:
 
 # Si hay nuevos datos, guardarlos en el CSV
 if nuevos_datos:
-    df_nuevos = pd.DataFrame(nuevos_datos, columns=['previsualizacion_src','previsualizacion','enlace_web', 'nombre_de_archivo_para_commons', 'fecha', 'palabras_clave', 'caption_es', 'wikitext', 'nombre_archivo_original','enlace_descarga'])
+    df_nuevos = pd.DataFrame(nuevos_datos, columns=['previsualizacion_src','previsualizacion','enlace_web', 'nombre_de_archivo_para_commons', 'fecha', 'palabras_clave', 'caption_es', 'wikitext', 'scrapeada_de_la_pagina_numero','nombre_archivo_original','enlace_descarga'])
     df_nuevos['fecha'] = pd.to_datetime(df_nuevos['fecha'], format='%d.%m.%Y').dt.strftime('%Y-%m-%d')
     df_final = pd.concat([df_existing, df_nuevos], ignore_index=True)
     df_final.to_csv(CSV_FILE, index=False)
