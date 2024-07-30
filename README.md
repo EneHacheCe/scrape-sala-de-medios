@@ -46,11 +46,12 @@ python3 sala_de_medios.py
 9. Google Sheets nos va a pedir permiso para cargar URLS externas. Hay que tocar el botón "Permitir acceso".
 10. Arrastrar la fórmula a todas las filas.
 11. Ensanchar la columna de previsuaizaciones según necesite
-12. Recorrer la planilla chequeando los thumbnails. En caso de necesitar ver la foto en tamaño completo, podés clicar el enlace de la columna "enlace_web". Podés eliminar las filas de las fotos que no necesitamos subir, o bien crear una nueva columna en la que marcar las fotos que no van.
-También puede ser un buen momento para mejorar o corregir los contenidos de las columas `fecha`, `caption_es` y `wikitext`. Particularmente con las fotos scrapeadas de últimas páginas es probable que la fecha sea incorrecta, y que la fecha correcta información se encuentre en las palabras clave.
-Es inútil modificar `palabas_clave` (Openrefine no utilizará esa columna).
-No es buena idea modificar el `nombre_de_archivo_para_commons`, así nos aseguramos de cotejar correctamente contra Wikimedia Commons.
-NO MODIFIQUES: `previsualizacion_src`, `enlace_web`, `nombre_archivo_original` y `enlace_descarga`.
+12. Recorrer la planilla chequeando los thumbnails. En caso de necesitar ver la foto en tamaño completo, podés clicar el enlace de la columna "enlace_web". Podés eliminar las filas de las fotos que no necesitamos subir, o bien crear una nueva columna en la que marcar las fotos que no van. También puede ser un buen momento para mejorar o corregir los contenidos de las columas `fecha`, `caption_es` y `wikitext`. Tené en cuenta que:
+    - Particularmente con las fotos scrapeadas de últimas páginas es probable que la fecha sea incorrecta, y que la fecha correcta se encuentre en las palabras clave.
+    - Utiliza el formato `YYYY(-mm(-dd))` para las fechas.
+    - Es inútil modificar `palabas_clave` (Openrefine no utilizará esa columna).
+    - No es buena idea modificar el `nombre_de_archivo_para_commons`, así nos aseguramos de cotejar correctamente contra Wikimedia Commons.
+    - NO DEBEMOS MODIFICAR: `previsualizacion_src`, `enlace_web`, `nombre_archivo_original` y `enlace_descarga`.
 
 ### Reconciliar y subir imágenes
 13. Abrir OpenRefine, preferentemente [con bastante memoria asignada](https://openrefine.org/docs/manual/installing#increasing-memory-allocation)
