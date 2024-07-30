@@ -11,14 +11,14 @@ python3 --version
 python3 -m pip install requests
 python3 -m pip install os
 python3 -m pip install pandas
-python3 -m pip install BeautifulSoup
+python3 -m pip install beautifulsoup4
 ```
 o así
 ```
 apt install python3-requests
 apt install python3-os
 apt install python3-pandas
-apt install python3-BeautifulSoup
+apt install python3-beautifulsoup4
 ```
 o buscá más información [acá](https://docs.python.org/3/installing/index.html)
 3. Cloná este repositorio o descargá el archivo `sala_de_medios.py`
