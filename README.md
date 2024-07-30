@@ -46,16 +46,21 @@ python3 sala_de_medios.py
 9. Google Sheets nos va a pedir permiso para cargar URLS externas. Hay que tocar el botón "Permitir acceso".
 10. Arrastrar la fórmula a todas las filas.
 11. Ensanchar la columna de previsuaizaciones según necesite
-12. Recorrer la planilla chequeando los thumbnails. En caso de necesitar ver la foto en tamaño completo, podés clicar el enlace de la columna "enlace_web". Podés eliminar las filas de las fotos que no necesitamos subir, o bien crear una nueva columna en la que marcar las fotos que no van. También puede ser un buen momento para mejorar las descripciones.
+12. Recorrer la planilla chequeando los thumbnails. En caso de necesitar ver la foto en tamaño completo, podés clicar el enlace de la columna "enlace_web". Podés eliminar las filas de las fotos que no necesitamos subir, o bien crear una nueva columna en la que marcar las fotos que no van. También puede ser un buen momento para mejorar o corregir los contenidos de las columas `fecha`, `caption_es` y `wikitext`. Particularmente con las fotos de las páginas más antiguas, es probable que la fecha sea incorrecta y la información correcta se encuentre en las palabras clave. Es inútil modificar `palabas_clave` (Openrefine no utilizará esa columna). No es buena idea modificar el `nombre_de_archivo_para_commons` para poder continuar reconciliando en futuras subidas. NO MODIFIQUES: `previsualizacion_src`, `enlace_web`, `nombre_archivo_original` y `enlace_descarga`.
+![imagen](https://github.com/user-attachments/assets/ff3eabe2-41c7-4cce-b715-ccb8101499ab)
+
+![imagen](https://github.com/user-attachments/assets/cc46d841-8fd2-4d7c-ae54-5baa91404385)
+No modifiques los nombres de archivo
 ### Reconciliar y subir imágenes
 13. Abrir OpenRefine, preferentemente [con bastante memoria asignada](https://openrefine.org/docs/manual/installing#increasing-memory-allocation)
 14. Crear un nuevo proyecto en Open Refine y abrir el .CSV descargado.
 15. Seleccionar instancia de Wikibase = Wikimedia Commons.
 16. Si la planilla aún contiene fotos que no deberían ser subidas a Wikimedia Commons, crear una faceta para filtrarlas.
-17. Reconciliar columna `nombre_de_archivo_para_commons`. Cotejar / Inicia cotejo.
-18. Crear nuevos archivos para los archivos no entonctados. Cotejar / Acciones / Crear un nuevo elemento para cada celda
-19. Crear el esquema de esta forma:
+17. Reconciliar columna `nombre_de_archivo_para_commons`: Cotejar / Inicia cotejo.
+18. Utilizar la faceta generada por el cotejo para para excluír los archivos que ya están en Commons.
+19. Crear nuevos archivos para los archivos no entontrados: Cotejar / Acciones / Crear un nuevo elemento para cada celda
+20. Crear el esquema de esta forma:
 ![esquema](readme-esquema.png)
-20. Cargar ediciones en Wikimedia Commons. Extensiones Wikidata / Cargar ediciones en Wikidata
+21. Cargar ediciones en Wikimedia Commons. Extensiones Wikidata / Cargar ediciones en Wikidata
 ## To do
 [en este doc](https://docs.google.com/document/d/1at_0rbG2jGkm4pLKOaLI98anqZWGFZfCr8gW1YfLqw8/edit#heading=h.7xnc92h81px)
