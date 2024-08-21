@@ -1,0 +1,11 @@
+# Archivos autogenerados por Python
+**/__pycache__
+*.py[cod]
+*$py.class
+
+# Virtualenv
+bin
+./lib
+lib64
+pyvenv.cfg
+share
