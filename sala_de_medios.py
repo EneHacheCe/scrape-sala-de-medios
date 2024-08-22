@@ -3,18 +3,16 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import os
 from datetime import datetime
-import exiftool
-import sys
 from PIL import Image
 from io import BytesIO
 import re
 
 #Comenzar en la página
-START_AT_PAGE = 2133
+START_AT_PAGE = 2252
 # Detenerse al llegar a este al archivo, por ejemplo: 20240716dicimouyplr61.jpg
 STOP_AT_FILE = "atmedsc9735.jpg"
 #Detenerse al llegar a las N páginas
-SCARPE_MAX_N_PAGES = 1000
+SCARPE_MAX_N_PAGES = 377
 #Caption en español para las imágenes que no tienen título definido en la web de sala de medios
 DEFAULT_CAPTION = "Fotografía de la Sala de Medios de la Intendencia de Montevideo"
 
@@ -37,8 +35,8 @@ COLUMNS = ['previsualizacion_src',
     'palabras_clave',
     'caption_es',
     'wikitext',
-    'copyright_exif',
-    'autor_exif',
+    'copyright',
+    'autor',
     'scrapeada_de_la_pagina_numero',
     'scrapeada_timestamp',
     'nombre_archivo_original',
@@ -65,22 +63,31 @@ if os.path.exists(IMAGENES_YA_SUBIDAS_CSV):
 
 # Obtener el HTML de una página
 def get_html(url):
-    response = requests.get(url, headers=headers)
-    return response.text
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()  # Esto lanzará una excepción para códigos de estado HTTP 4xx/5xx
+        return response.text
+    except requests.exceptions.RequestException as e:
+        print(f"Error de conexión: {e}. Reintentando...")
+        return None
 
 #obtiene la url de la imagen a partir de la url de la web que muestra la imagen. en base a patrones observados
 def get_image_url(web_url):
     image_url = web_url.replace("https://montevideo.gub.uy/files/","https://montevideo.gub.uy/sites/default/files/biblioteca/")
     image_url = re.sub(r'jpg$', '.jpg', image_url)
-    print(image_url)
     return image_url
 
-def get_exif_data(image_url):
+def get_exif_data(web_url):
+    image_url = get_image_url(web_url)
     # Descargar la imagen desde la URL
-    response = requests.get(image_url, headers=headers)
     try:
+        response = requests.get(image_url, headers=headers)
         image = Image.open(BytesIO(response.content))
-    except:
+    except Exception as e:
+        print(f'no se pudo leer el exif de')
+        print(f'web: {web_url}')
+        print(f'imagen: {image_url}')
+        print(e)
         return "Unable to read Image for EXIF parsing","Unable to read Image for EXIF parsing"
     
     # Obtener datos EXIF
@@ -96,7 +103,23 @@ def get_exif_data(image_url):
 # Scrapear una página
 def scrape_page(page_number):
     url = f"{BASE_URL}?filename=&field_file_image_title_text_value=&field_categorias_tid_1=&page={page_number}"
+    
+    html = None
+    retry_count = 10  # Número máximo de reintentos
+    
+    while retry_count > 0 and html is None:
+        html = get_html(url)
+        if html is None:
+            retry_count -= 1
+            if retry_count > 0:
+                print(f"Reintentando... ({retry_count} intentos restantes)")
+    
+    if html is None:
+        print(f"No se pudo obtener la página {page_number} después de varios intentos.")
+        return [], False
+    
     html = get_html(url)
+    
     soup = BeautifulSoup(html, 'html.parser')
     fotos = soup.find('div',class_='view-biblioteca-de-imagenes').find_all('td')
     
@@ -139,9 +162,9 @@ def scrape_page(page_number):
 
 [[Category:Files_provided_by_Sala_de_Medios_Intendencia_de_Montevideo]]
 """
-        author, copyright = get_exif_data(get_image_url(enlace_web))
+        author, copyright = get_exif_data(enlace_web)
         nuevos_datos.append([previsualizacion_src,"",enlace_web, nombre_de_archivo_para_commons, fecha, palabras_clave, caption_es, wikitext, author, copyright, page_number, current_timestamp, nombre_archivo_original, enlace_descarga])
-        
+        print(f"lista la foto {nombre_archivo_original} de la página {page_number}")
     return nuevos_datos, False
 
 # Iterar sobre las páginas y scrapear
