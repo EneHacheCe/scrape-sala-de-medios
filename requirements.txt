@@ -2,3 +2,4 @@ requests==2.32.3
 pandas==2.2.2
 beautifulsoup4==4.12.3
 Pillow==10.4.0
+PyExifTool==0.5.6

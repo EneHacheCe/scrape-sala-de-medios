@@ -6,13 +6,16 @@ from datetime import datetime
 from PIL import Image
 from io import BytesIO
 import re
+import logging
 
 #Comenzar en la página
-START_AT_PAGE = 2252
+START_AT_PAGE = 2259
 # Detenerse al llegar a este al archivo, por ejemplo: 20240716dicimouyplr61.jpg
 STOP_AT_FILE = "atmedsc9735.jpg"
 #Detenerse al llegar a las N páginas
-SCARPE_MAX_N_PAGES = 377
+SCARPE_MAX_N_PAGES = 400    
+#Extraer datos EXIF de las fotos. Desactivar para que el scrapping sea más rápido
+READ_EXIF = False
 #Caption en español para las imágenes que no tienen título definido en la web de sala de medios
 DEFAULT_CAPTION = "Fotografía de la Sala de Medios de la Intendencia de Montevideo"
 
@@ -32,11 +35,12 @@ COLUMNS = ['previsualizacion_src',
     'enlace_web',
     'nombre_de_archivo_para_commons',
     'fecha',
+    'fecha_exif',
     'palabras_clave',
     'caption_es',
     'wikitext',
-    'copyright',
     'autor',
+    'copyright_exif',
     'scrapeada_de_la_pagina_numero',
     'scrapeada_timestamp',
     'nombre_archivo_original',
@@ -46,7 +50,13 @@ COLUMNS = ['previsualizacion_src',
 # Fotos subidas antes de nuestra primer gran subida
 IMAGENES_YA_SUBIDAS_CSV = "imagenes_ya_subidas.csv"
 
+# TXT con URLs de descarga para completar información del EXIF
+IMAGE_URLS = "image_urls.txt"
+
 current_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
+
+# Configurar el logger
+logging.basicConfig(filename='error.log', level=logging.ERROR, format='%(asctime)s %(levelname)s:%(message)s')
 
 if os.path.exists(CSV_FILE):
     df_existing = pd.read_csv(CSV_FILE)
@@ -68,6 +78,7 @@ def get_html(url):
         response.raise_for_status()  # Esto lanzará una excepción para códigos de estado HTTP 4xx/5xx
         return response.text
     except requests.exceptions.RequestException as e:
+        logging.error(f"Error de conexión: {e}. Reintentando...")
         print(f"Error de conexión: {e}. Reintentando...")
         return None
 
@@ -78,27 +89,35 @@ def get_image_url(web_url):
     return image_url
 
 def get_exif_data(web_url):
+    if not READ_EXIF:
+        return "No buscamos EXIF","No buscamos EXIF","No buscamos EXIF"
+    
     image_url = get_image_url(web_url)
     # Descargar la imagen desde la URL
     try:
         response = requests.get(image_url, headers=headers)
         image = Image.open(BytesIO(response.content))
     except Exception as e:
-        print(f'no se pudo leer el exif de')
-        print(f'web: {web_url}')
-        print(f'imagen: {image_url}')
-        print(e)
-        return "Unable to read Image for EXIF parsing","Unable to read Image for EXIF parsing"
+        logging.error(f"No se pudo leer el EXIF de la imagen {web_url}. Error: {e}")
+        return "No se encontró la imagen para leer su EXIF","No se encontró la imagen para leer su EXIF","No se encontró la imagen para leer su EXIF"
     
     # Obtener datos EXIF
     exif_data = image._getexif()
     
     # Comprobar si hay EXIF data
     if exif_data is not None:
+        #recodificar en utf-8 y limpiar el dato
+        fecha = exif_data.get(306).encode('latin-1').decode('utf-8').replace(";","") if exif_data.get(306) else ""
+        artist = exif_data.get(315).encode('latin-1').decode('utf-8').replace(";","") if exif_data.get(315) else ""
+        copyright = exif_data.get(33432).encode('latin-1').decode('utf-8').replace(";","") if exif_data.get(33432) else ""
+        
+        #si no hay datos de artista, nos quedamos con los datos de copyright
+        author = copyright if artist == "" else artist
+        author = author.replace("Intendencia de Montevideo","")
         #Author, Copyright holder
-        return exif_data.get(315),exif_data.get(33432)
+        return fecha, author, copyright
     else:
-        return "No EXIF data found","No EXIF data found"
+        return "No se encontró EXIF","No se encontró EXIF","No se encontró EXIF"
     
 # Scrapear una página
 def scrape_page(page_number):
@@ -115,10 +134,9 @@ def scrape_page(page_number):
                 print(f"Reintentando... ({retry_count} intentos restantes)")
     
     if html is None:
+        logging.error(f"No se pudo obtener la página {page_number} después de varios intentos.")
         print(f"No se pudo obtener la página {page_number} después de varios intentos.")
         return [], False
-    
-    html = get_html(url)
     
     soup = BeautifulSoup(html, 'html.parser')
     fotos = soup.find('div',class_='view-biblioteca-de-imagenes').find_all('td')
@@ -131,7 +149,8 @@ def scrape_page(page_number):
     
     for foto in fotos:
         nombre_archivo_original = foto.find('div', class_='views-field-filename').find('span', class_='field-content').text.strip()
-        
+
+
         if nombre_archivo_original == STOP_AT_FILE:
             print("Llegamos a una foto que fue scrappeada anteriormente. Aquí me detengo.")
             return nuevos_datos, True
@@ -142,11 +161,11 @@ def scrape_page(page_number):
         previsualizacion_src = foto.find('img')['src'] if foto.find('img')['src'] else "no se encontró thumnail"
         enlace_descarga = foto.find('div', class_='views-field-download').find('a')['href']
         enlace_web = "https://montevideo.gub.uy" + foto.find('div', class_='views-field-rendered').find('a')['href']
-        titulo = foto.find('div', class_='views-field-field-file-image-title-text').find('span', class_='field-content').text.strip()
+        titulo = foto.find('div', class_='views-field-field-file-image-title-text').find('span', class_='field-content').text.replace(";","").strip()
         nombre_de_archivo_para_commons = titulo + " - " + nombre_archivo_original if titulo else nombre_archivo_original
         fecha = foto.find('div', class_='views-field-timestamp').find('span', class_='field-content').text.strip()
         categorias_im = foto.find('div', class_='views-field-field-categorias').find('span', class_='field-content').text.strip()
-        palabras_clave = categorias_im
+        palabras_clave = categorias_im.replace(";","")
 
         # Crear el caption_es
         caption_es = titulo if titulo else DEFAULT_CAPTION 
@@ -162,8 +181,8 @@ def scrape_page(page_number):
 
 [[Category:Files_provided_by_Sala_de_Medios_Intendencia_de_Montevideo]]
 """
-        author, copyright = get_exif_data(enlace_web)
-        nuevos_datos.append([previsualizacion_src,"",enlace_web, nombre_de_archivo_para_commons, fecha, palabras_clave, caption_es, wikitext, author, copyright, page_number, current_timestamp, nombre_archivo_original, enlace_descarga])
+        fecha_exif, author, copyright = get_exif_data(enlace_web)
+        nuevos_datos.append([previsualizacion_src,"",enlace_web, nombre_de_archivo_para_commons, fecha, fecha_exif, palabras_clave, caption_es, wikitext, author, copyright, page_number, current_timestamp, nombre_archivo_original, enlace_descarga])
         print(f"lista la foto {nombre_archivo_original} de la página {page_number}")
     return nuevos_datos, False
 
@@ -185,6 +204,10 @@ if nuevos_datos:
     df_nuevos['fecha'] = pd.to_datetime(df_nuevos['fecha'], format='%d.%m.%Y').dt.strftime('%Y-%m-%d')
     df_final = pd.concat([df_existing, df_nuevos], ignore_index=True)
     df_final.to_csv(CSV_FILE, index=False)
+    
+    # Extraer las URLs de la columna específica
+    urls = df_nuevos["enlace_descarga"].dropna().to_csv(IMAGE_URLS, index=False, header=False)
+
     print("Nuevos datos añadidos al CSV.")
 else:
     print("No se encontraron nuevas imágenes.")
