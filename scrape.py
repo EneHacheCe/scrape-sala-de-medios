@@ -9,13 +9,11 @@ import re
 import logging
 
 #Comenzar en la página
-START_AT_PAGE = 2259
+START_AT_PAGE = 1778
 # Detenerse al llegar a este al archivo, por ejemplo: 20240716dicimouyplr61.jpg
-STOP_AT_FILE = "atmedsc9735.jpg"
+STOP_AT_FILE = "dsc0673.jpg"
 #Detenerse al llegar a las N páginas
-SCARPE_MAX_N_PAGES = 400    
-#Extraer datos EXIF de las fotos. Desactivar para que el scrapping sea más rápido
-READ_EXIF = False
+SCARPE_MAX_N_PAGES = 1000    
 #Caption en español para las imágenes que no tienen título definido en la web de sala de medios
 DEFAULT_CAPTION = "Fotografía de la Sala de Medios de la Intendencia de Montevideo"
 
@@ -87,37 +85,6 @@ def get_image_url(web_url):
     image_url = web_url.replace("https://montevideo.gub.uy/files/","https://montevideo.gub.uy/sites/default/files/biblioteca/")
     image_url = re.sub(r'jpg$', '.jpg', image_url)
     return image_url
-
-def get_exif_data(web_url):
-    if not READ_EXIF:
-        return "No buscamos EXIF","No buscamos EXIF","No buscamos EXIF"
-    
-    image_url = get_image_url(web_url)
-    # Descargar la imagen desde la URL
-    try:
-        response = requests.get(image_url, headers=headers)
-        image = Image.open(BytesIO(response.content))
-    except Exception as e:
-        logging.error(f"No se pudo leer el EXIF de la imagen {web_url}. Error: {e}")
-        return "No se encontró la imagen para leer su EXIF","No se encontró la imagen para leer su EXIF","No se encontró la imagen para leer su EXIF"
-    
-    # Obtener datos EXIF
-    exif_data = image._getexif()
-    
-    # Comprobar si hay EXIF data
-    if exif_data is not None:
-        #recodificar en utf-8 y limpiar el dato
-        fecha = exif_data.get(306).encode('latin-1').decode('utf-8').replace(";","") if exif_data.get(306) else ""
-        artist = exif_data.get(315).encode('latin-1').decode('utf-8').replace(";","") if exif_data.get(315) else ""
-        copyright = exif_data.get(33432).encode('latin-1').decode('utf-8').replace(";","") if exif_data.get(33432) else ""
-        
-        #si no hay datos de artista, nos quedamos con los datos de copyright
-        author = copyright if artist == "" else artist
-        author = author.replace("Intendencia de Montevideo","")
-        #Author, Copyright holder
-        return fecha, author, copyright
-    else:
-        return "No se encontró EXIF","No se encontró EXIF","No se encontró EXIF"
     
 # Scrapear una página
 def scrape_page(page_number):
@@ -181,7 +148,7 @@ def scrape_page(page_number):
 
 [[Category:Files_provided_by_Sala_de_Medios_Intendencia_de_Montevideo]]
 """
-        fecha_exif, author, copyright = get_exif_data(enlace_web)
+        fecha_exif, author, copyright = ["","",""]
         nuevos_datos.append([previsualizacion_src,"",enlace_web, nombre_de_archivo_para_commons, fecha, fecha_exif, palabras_clave, caption_es, wikitext, author, copyright, page_number, current_timestamp, nombre_archivo_original, enlace_descarga])
         print(f"lista la foto {nombre_archivo_original} de la página {page_number}")
     return nuevos_datos, False

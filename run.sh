@@ -1,5 +1,5 @@
 #!/bin/bash
-DOWNLOAD_FOLDER="descargas"
+#DOWNLOAD_FOLDER="descargas"
 
 # Crear el entorno virtual, usando python3 si está disponible, de lo contrario usa python
 if command -v python3 &>/dev/null; then
@@ -27,7 +27,7 @@ elif command -v python &>/dev/null; then
 fi
 
 #crear la carpeta de descargas
-mkdir -p $DOWNLOAD_FOLDER
+#mkdir -p $DOWNLOAD_FOLDER
 
-wget -i "image_urls.txt" -P $DOWNLOAD_FOLDER -q -nc -nd -c
+#wget -i "image_urls.txt" -P $DOWNLOAD_FOLDER -q -nc -nd -c --content-disposition
 

@@ -13,12 +13,12 @@ python3 --version
 
 2. Cloná o descargá este repositorio
 
-3. En el archivo `sala_de_medios.py` modificá las siguientes líneas según tus preferencias
+3. En el archivo `scrape.py` modificá las siguientes líneas según tus preferencias
 ```
 #Comenzar en la página
 START_AT_PAGE = 0
 # Detenerse al llegar a este archivo 
-STOP_AT_FILE = "20240716dicimouyplr61.jpg"
+STOP_AT_FILE = "dsc0673.jpg"
 #Detenerse al llegar a las N páginas escrapeadas
 SCARPE_MAX_N_PAGES = 10
 #Caption en español por defecto para las imágenes que no tienen título definido en la web de Sala de Medios
