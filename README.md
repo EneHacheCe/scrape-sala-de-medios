@@ -54,11 +54,12 @@ chmod +x run.sh
 15. Crear un nuevo proyecto en Open Refine y abrir el .CSV descargado.
 16. Seleccionar instancia de Wikibase = Wikimedia Commons.
 17. Si la planilla aún contiene fotos que no deberían ser subidas a Wikimedia Commons, crear una faceta para filtrarlas.
-18. Reconciliar columna `nombre_de_archivo_para_commons`: Cotejar / Inicia cotejo.
+18. Reconciliar columna `nombre_de_archivo_para_commons`: Cotejar / Iniciar cotejo.
 19. Utilizar la faceta generada por el cotejo para para excluír los archivos que ya están en Commons.
 20. Crear nuevos archivos para los archivos no entontrados: Cotejar / Acciones / Crear un nuevo elemento para cada celda
-21. Crear el esquema de esta forma:
+21. En caso de que tengas datos del autor, limpiar los datos de esta columna y cotejar los autores: Cotejar / Iniciar cotejo. En caso de que haya autores que aún no están en Wikidata, podemos crearlos.
+22. Crear el esquema de esta forma:
 ![esquema](readme-esquema.png)
-22. Cargar ediciones en Wikimedia Commons. Extensiones Wikidata / Cargar ediciones en Wikidata
+23. Cargar ediciones en Wikimedia Commons. Extensiones Wikidata / Cargar ediciones en Wikidata
 ## To do
 [en este doc](https://docs.google.com/document/d/1at_0rbG2jGkm4pLKOaLI98anqZWGFZfCr8gW1YfLqw8/edit#heading=h.7xnc92h81px)
