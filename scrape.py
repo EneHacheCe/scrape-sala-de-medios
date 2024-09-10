@@ -3,17 +3,15 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import os
 from datetime import datetime
-from PIL import Image
-from io import BytesIO
 import re
 import logging
 
 #Comenzar en la página
-START_AT_PAGE = 1778
+START_AT_PAGE = 690
 # Detenerse al llegar a este al archivo, por ejemplo: 20240716dicimouyplr61.jpg
-STOP_AT_FILE = "dsc0673.jpg"
+STOP_AT_FILE = "20230725dicimouysm22416.jpg"
 #Detenerse al llegar a las N páginas
-SCARPE_MAX_N_PAGES = 1000    
+SCARPE_MAX_N_PAGES = 1000
 #Caption en español para las imágenes que no tienen título definido en la web de sala de medios
 DEFAULT_CAPTION = "Fotografía de la Sala de Medios de la Intendencia de Montevideo"
 
@@ -30,6 +28,7 @@ headers.update({
 CSV_FILE = "imagenes.csv"
 COLUMNS = ['previsualizacion_src',
     'previsualizacion',
+    'descartar',
     'enlace_web',
     'nombre_de_archivo_para_commons',
     'fecha',
@@ -149,7 +148,7 @@ def scrape_page(page_number):
 [[Category:Files_provided_by_Sala_de_Medios_Intendencia_de_Montevideo]]
 """
         fecha_exif, author, copyright = ["","",""]
-        nuevos_datos.append([previsualizacion_src,"",enlace_web, nombre_de_archivo_para_commons, fecha, fecha_exif, palabras_clave, caption_es, wikitext, author, copyright, page_number, current_timestamp, nombre_archivo_original, enlace_descarga])
+        nuevos_datos.append([previsualizacion_src, "", "", enlace_web, nombre_de_archivo_para_commons, fecha, fecha_exif, palabras_clave, caption_es, wikitext, author, copyright, page_number, current_timestamp, nombre_archivo_original, enlace_descarga])
         print(f"lista la foto {nombre_archivo_original} de la página {page_number}")
     return nuevos_datos, False
 
