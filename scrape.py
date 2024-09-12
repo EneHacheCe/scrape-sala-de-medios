@@ -7,9 +7,9 @@ import re
 import logging
 
 #Comenzar en la página
-START_AT_PAGE = 690
+START_AT_PAGE = 0
 # Detenerse al llegar a este al archivo, por ejemplo: 20240716dicimouyplr61.jpg
-STOP_AT_FILE = "20230725dicimouysm22416.jpg"
+STOP_AT_FILE = "20240413dicimouyit0193.jpg"
 #Detenerse al llegar a las N páginas
 SCARPE_MAX_N_PAGES = 1000
 #Caption en español para las imágenes que no tienen título definido en la web de sala de medios
